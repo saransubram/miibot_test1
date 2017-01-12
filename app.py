@@ -29,9 +29,9 @@ def webhook():
 
 
 def processRequest(req):
-    if req.get("result").get("action") != "yahooWeatherForecast":
+    if req.get("result").get("action") != "employee.age":
         return {}
-    baseurl = "https://query.yahooapis.com/v1/public/yql?"
+    baseurl = "https://www.googleapis.com/bigquery/v2/projects/eng-scene-141617/queries/bquijob_669b98b_15994510bfa?key={AIzaSyBdBsSrl9W5AZ3yGJhNeTdcT8ZPa_4PBvI}"
     yql_query = makeYqlQuery(req)
     if yql_query is None:
         return {}
@@ -45,8 +45,8 @@ def processRequest(req):
 def makeYqlQuery(req):
     result = req.get("result")
     parameters = result.get("parameters")
-    city = parameters.get("geo-city")
-    if city is None:
+    employee = parameters.get("employees")
+    if employee is None:
         return None
 
     return "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text='" + city + "')"
@@ -59,20 +59,6 @@ def makeWebhookResult(data):
 
     result = query.get('results')
     if result is None:
-        return {}
-
-    channel = result.get('channel')
-    if channel is None:
-        return {}
-
-    item = channel.get('item')
-    location = channel.get('location')
-    units = channel.get('units')
-    if (location is None) or (item is None) or (units is None):
-        return {}
-
-    condition = item.get('condition')
-    if condition is None:
         return {}
 
     # print(json.dumps(item, indent=4))
